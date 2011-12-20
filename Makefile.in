@@ -27,19 +27,18 @@
 # Makefile for ste
 CC = @CC@
 KCFLAGS = @KCFLAGS@
-DRV_PATH = @DRV_PATH@
-DRV_CONF_PATH = /usr/kernel/drv
+DRV_DIR = @DRV_DIR@
+DRV_CONF_DIR = /usr/kernel/drv
 PRODUCTS = ste sted  stehub
 CFLAGS = @CFLAGS@
 ECHO = /bin/echo
 CP = /bin/cp
 RM = /bin/rm
-LD = /usr/ccs/bin/ld
-RM = /bin/rm
 CAT = /bin/cat
 INSTALL = /usr/sbin/install
 REM_DRV = /usr/sbin/rem_drv 
 ADD_DRV = /usr/sbin/add_drv 
+LD_FLAGS = @LD_OPT@
 
 all: $(PRODUCTS)
 
@@ -50,7 +49,7 @@ ste.o: ste.c ste.h
 	$(CC) -c $(KCFLAGS) $< -o $@
 
 ste: ste.o
-	$(LD) -dn -r $^ -o $@
+	$(LD) $(LD_FLAGS) -dn -r $^ -o $@
 
 stehub.o: stehub.c sted.h ste.h
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -71,7 +70,7 @@ sted: sted.o sted_socket.o dlpiutil.o
 	$(CC) $(CFLAGS) -lsocket -lnsl $^ -o $@
 
 install: all
-	-$(INSTALL) -s -f $(DRV_PATH) -m 0755 -u root -g sys ste
+	-$(INSTALL) -s -f $(DRV_DIR) -m 0755 -u root -g sys ste
 	-$(INSTALL) -s -f /kernel/drv -m 0644 -u root -g sys ste.conf
 	$(INSTALL) -s -d /usr/local/bin 
 	-$(INSTALL) -s -f /usr/local/bin -m 0755 -u root sted 
@@ -80,7 +79,7 @@ install: all
 
 uninstall:
 	-$(REM_DRV) ste
-	-$(RM) $(DRV_PATH)/ste
+	-$(RM) $(DRV_DIR)/ste
 	-$(RM) /kernel/drv/ste.conf
 	-$(RM) /usr/local/bin/sted
 	-$(RM) /usr/local/bin/stehub
