@@ -1,0 +1,14 @@
+.nfs2CD1
+.nfs3CD1
+Makefile
+autom4te.cache/
+config.log
+config.status
+dlpiutil.o
+ste
+ste.o
+sted
+sted.o
+sted_socket.o
+stehub
+stehub.o
