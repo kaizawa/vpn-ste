@@ -578,7 +578,7 @@ ste_send_up(queue_t *q, mblk_t *mp)
 
     etherhdr = (struct ether_header *)mp->b_rptr;
 
-    DEBUG_PRINT((CE_CONT, "ste_send_up: ether_type = 0x%x\n", etherhdr->ether_type));
+    DEBUG_PRINT((CE_CONT, "ste_send_up: ether_type = 0x%x\n", ntohs(etherhdr->ether_type)));
     
     /*
      * エンディアン対策
