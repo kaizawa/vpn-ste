@@ -117,7 +117,6 @@
 #include <netinet/in.h>
 #include <inet/common.h>
 #include <inet/ip.h>
-#include <inet/tcp.h>
 #include <sys/signal.h>
 #include <sys/errno.h>
 #include <sys/cred.h>
@@ -567,6 +566,10 @@ ste_send_up(queue_t *q, mblk_t *mp)
     mblk_t *dupmp;       // putmsg(9F) に渡すコピーされたメッセージ
     mblk_t *unitmp = NULL; // dl_unitdata_ind プリミティブのメッセージ
     mblk_t *tmpmp  = NULL; // 操作用のメッセージポインタ
+#ifdef DEBUG
+    unsigned char *rptr;
+    size_t datalen = 0;
+#endif    
 
     stestr = q->q_ptr;    
     if((stesoft = stestr->stesoft) == NULL){                        
@@ -618,6 +621,10 @@ ste_send_up(queue_t *q, mblk_t *mp)
              * RAW モード
              */
             tmpmp = mp;
+#ifdef DEBUG
+            rptr = tmpmp->b_rptr;
+            datalen = tmpmp->b_wptr - tmpmp->b_rptr;
+#endif            
         } else {
             /*
              * 必要になった時に1度だけ dl_unitdata_ind のメッセージを作成し、
@@ -633,6 +640,10 @@ ste_send_up(queue_t *q, mblk_t *mp)
                 }
             }
             tmpmp = unitmp;
+#ifdef DEBUG
+            rptr = tmpmp->b_cont->b_rptr;
+            datalen = tmpmp->b_cont->b_wptr - tmpmp->b_cont->b_rptr;
+#endif            
         }
         
         if(canputnext(strp->qptr) == 0){
@@ -649,11 +660,27 @@ ste_send_up(queue_t *q, mblk_t *mp)
             continue;
         }
 
+#ifdef DEBUG
+        /*
+         * DEBUG 有効時に次の module に渡す先頭 32byte だけを出力。
+         */
+        DEBUG_PRINT((CE_CONT, "data length: %d\n", datalen));
+        DEBUG_PRINT((CE_CONT,
+          "00: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+          rptr[0],rptr[1],rptr[2],rptr[3],rptr[4],rptr[5],rptr[6],rptr[7],
+          rptr[8],rptr[9],rptr[10],rptr[11],rptr[12],rptr[13],rptr[14],rptr[15]));
+        DEBUG_PRINT((CE_CONT,
+          "16: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+          rptr[16],rptr[17],rptr[18],rptr[19],rptr[20],rptr[21],rptr[22],rptr[23],
+          rptr[24],rptr[25],rptr[26],rptr[27],rptr[28],rptr[29],rptr[30],rptr[31]));
+#endif
         /*
          * 見つかった queue にメッセージを put。
          */
         putnext(strp->qptr, dupmp);
-        DEBUG_PRINT((CE_CONT, "ste_send_up: putnext() called (PPA=%d,SAP=0x%x)", strp->stesoft->instance, strp->sap));
+        DEBUG_PRINT((CE_CONT, "ste_send_up: putnext() called (PPA=%d,SAP=0x%x) to %s",
+                     strp->stesoft->instance, strp->sap,
+                     strp->qptr->q_next->q_qinfo->qi_minfo->mi_idname));
 
         STESTR_RELEASE(prevstrp);
         prevstrp = strp;        
