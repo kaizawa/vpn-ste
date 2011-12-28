@@ -2143,7 +2143,7 @@ ste_create_dl_unitdata_ind(mblk_t *mp)
     dladdr->sap = (u_short)ntohs(etherhdr->ether_type);
     bcopy((char *)&etherhdr->ether_shost, (char *)&dladdr->etheraddr, ETHERADDRL);
 
-    newmp->b_datap->db_type = M_PCPROTO;
+    newmp->b_datap->db_type = M_PROTO;
     newmp->b_cont = dupmp;
     newmp->b_wptr = (unsigned char *)newmp->b_rptr + sizeof(dl_unitdata_ind_t) + STEDLADDRL + STEDLADDRL;
     return(newmp);
