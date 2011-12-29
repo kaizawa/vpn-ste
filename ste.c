@@ -362,7 +362,7 @@ static struct dev_ops ste_ops = {
  */
 static struct modldrv modldrv = {
     &mod_driverops,          /* pointer to mod_driverops*/
-    "virtual NIC driver"   , /* ドライバの説明          */
+    "Virtual NIC Driver "STE_VER, /* ドライバの説明          */
     &ste_ops                 /* driver ops              */
 };
 
@@ -381,9 +381,11 @@ static struct modlinkage modlinkage =
 int
 _init()
 {
-    int err;
+    int err;    
 
     DEBUG_PRINT((CE_CONT,"_init called"));
+    cmn_err(CE_CONT, "STE Virtual NIC driver %s", STE_VER);
+    
     /*
      * デバイス管理構造体の管理用の ste_soft_root を初期化
      * ste のデバイス管理構造体は ste_soft_t として定義されている。
