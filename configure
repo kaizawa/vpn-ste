@@ -2850,6 +2850,7 @@ case $KARCH in
         ;;
 esac
 
+STE_VER="1.1.0"
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then
   enableval=$enable_debug;
@@ -2859,6 +2860,12 @@ if test "$enable_debug" = "yes"; then
   CFLAGS="$CFLAGS -DDEBUG"
   KCFLAGS="$KCFLAGS -DDEBUG"
 fi
+
+cat >>confdefs.h <<_ACEOF
+#define STE_VER "$STE_VER"
+_ACEOF
+
+
 
 
 
