@@ -25,12 +25,15 @@
 #
 
 # Makefile for ste
+CONFIGURE_FILES = Makefile config.status config.cache config.h config.log
+
+PRODUCTS = ste sted stehub
+DEFS = @DEFS@
 CC = @CC@
-KCFLAGS = @KCFLAGS@
+KCFLAGS = $(DEFS) @KCFLAGS@
 DRV_DIR = @DRV_DIR@
 DRV_CONF_DIR = /usr/kernel/drv
-PRODUCTS = ste sted  stehub
-CFLAGS = @CFLAGS@
+CFLAGS = $(DEFS) @CFLAGS@
 ECHO = /bin/echo
 CP = /bin/cp
 RM = /bin/rm
@@ -44,6 +47,9 @@ all: $(PRODUCTS)
 
 clean:
 	$(RM) -f *.o sted stehub ste
+
+distclean:
+	rm -f $(CONFIGURE_FILES)
 
 ste.o: ste.c ste.h
 	$(CC) -c $(KCFLAGS) $< -o $@
