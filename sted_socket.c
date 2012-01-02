@@ -323,13 +323,16 @@ read_socket(stedstat_t *stedstat)
             /*
              * stehead は壊れていると思われる。以降の受信データは無視し、ループを抜ける。
              * （仮想ハブが受信パケットをこちらに転送せずに破棄した可能性が高い）
-             * この方法だと、未読のデータをすべて破棄するしかなく、また次の受信データの
+             *
+             * TODO: この方法だと、未読のデータをすべて破棄するしかなく、また次の受信データの
              * 先頭が stehead であるという保証も無いため、一度ここに入り込むと、しばらく
              * ここに来続ける可能性がある・・ヘッダーはデータの境界情報を持つ重要なもの
              * なので、もっと確実・安全に取り出せる仕組みを検討する必要がある。
              */
             stedstat->dataleft = stedstat->datalen = stedstat->dummyheadlen = 0;
-            print_err(LOG_NOTICE, "read_socket: header is broken\n");
+            if (debuglevel > 0){            
+                print_err(LOG_NOTICE, "read_socket: header is broken\n");
+            }
             break;
         }
         if (debuglevel > 1) {
